@@ -1,39 +1,58 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import './Login.css';
 
-function Login({ onLogin }) {
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("admin123");
-  const [error, setError] = useState("");
+function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
+
     try {
-      const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const response = await fetch('https://localhost:7030/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       });
 
-      if (!response.ok) {
-        throw new Error("Kullanıcı adı veya şifre hatalı");
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('token', data.token); // JWT token'ı sakla
+        alert("Giriş başarılı!");
+        // İleride yönlendirme yapılabilir
+      } else {
+        setError("Kullanıcı adı veya şifre hatalı.");
       }
-
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      onLogin();
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setError("Sunucuya bağlanılamadı.");
+      console.error("Login error:", error);
     }
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Giriş Yap</h2>
-      <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Kullanıcı Adı" />
-      <br />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Şifre" />
-      <br />
-      <button onClick={handleLogin}>Giriş Yap</button>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div className="login-container">
+      <form className="login-box" onSubmit={handleLogin}>
+        <h2>Giriş Yap</h2>
+
+        <input
+          type="text"
+          placeholder="Kullanıcı Adı"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+
+        <input
+          type="password"
+          placeholder="Şifre"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button type="submit">Giriş Yap</button>
+        {error && <p className="error">{error}</p>}
+      </form>
     </div>
   );
 }
