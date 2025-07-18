@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // yönlendirme için
 import './Login.css';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate(); // yönlendirme tanımı
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -19,12 +21,14 @@ function Login() {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('token', data.token); // JWT token'ı sakla
-        alert("Giriş başarılı!");
-        // İleride yönlendirme yapılabilir
+        console.log("Giriş başarılı, token: ", data.token);
+        localStorage.setItem('token', data.token);
+        navigate("/quiz");
       } else {
         setError("Kullanıcı adı veya şifre hatalı.");
+        console.log("Giriş hatası:", response.status);
       }
+
     } catch (error) {
       setError("Sunucuya bağlanılamadı.");
       console.error("Login error:", error);
