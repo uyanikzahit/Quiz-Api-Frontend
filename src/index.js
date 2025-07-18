@@ -1,13 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import Login from './Login'; // App yerine Login'i çağırıyoruz
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Login />
   </React.StrictMode>
 );
 
