@@ -1,49 +1,58 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import './QuizPage.css';
 
-function App() {
-  // Sorular ve yüklenme durumu state'leri
-  const [questions, setQuestions] = useState([]);
-  const [loading, setLoading] = useState(false);
+function QuizPage() {
+  const [allQuestions, setAllQuestions] = useState([]);
+  const [randomQuestion, setRandomQuestion] = useState(null);
+  const [answerInput, setAnswerInput] = useState('');
+  const [answerId, setAnswerId] = useState('');
+  const [checkResult, setCheckResult] = useState('');
 
-  // Backend URL'sini .env'den alıyoruz
-  const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const token = localStorage.getItem('token');
 
-  // Soruları backend'den fetch eden async fonksiyon
-  const fetchQuestions = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/quiz/questions`);
-      if (!response.ok) {
-        throw new Error("Soruları alırken bir hata oluştu.");
-      }
-      const data = await response.json();
-      setQuestions(data);
-    } catch (error) {
-      alert(error.message);
-    } finally {
-      setLoading(false);
-    }
+  const fetchAllQuestions = async () => {
+    const res = await fetch('https://localhost:7030/api/quiz/all', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    setAllQuestions(data);
+  };
+
+  const fetchRandomQuestion = async () => {
+    const res = await fetch('https://localhost:7030/api/quiz/random', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    setRandomQuestion(data);
+  };
+
+  const submitAnswer = async () => {
+    const res = await fetch('https://localhost:7030/api/quiz/check', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        questionId: parseInt(answerId),
+        selectedOption: answerInput
+      })
+    });
+
+    const result = await res.text();
+    setCheckResult(result === "true" ? "Cevap Doğru ✅" : "Cevap Yanlış ❌");
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Quiz Uygulaması</h1>
-
-      {/* Soruları getir butonu */}
-      <button onClick={fetchQuestions}>Tüm Soruları Getir</button>
-
-      {/* Yükleniyor durumu */}
-      {loading && <p>Yükleniyor...</p>}
-
-      {/* Sorular listesi */}
-      {questions.length > 0 && (
+    <div className="quiz-container">
+      <div className="section">
+        <h2>Tüm Sorular</h2>
+        <button onClick={fetchAllQuestions}>Getir</button>
         <ul>
-          {questions.map((q) => (
+          {allQuestions.map((q) => (
             <li key={q.id}>
-              {/* Soru metni */}
               <strong>{q.questionText}</strong>
               <ul>
-                {/* Seçenekler */}
                 {q.options.map((opt, i) => (
                   <li key={i}>{opt}</li>
                 ))}
@@ -51,9 +60,42 @@ function App() {
             </li>
           ))}
         </ul>
-      )}
+      </div>
+
+      <div className="section">
+        <h2>Rastgele Soru</h2>
+        <button onClick={fetchRandomQuestion}>Getir</button>
+        {randomQuestion && (
+          <div>
+            <p><strong>{randomQuestion.questionText}</strong></p>
+            <ul>
+              {randomQuestion.options.map((opt, i) => (
+                <li key={i}>{opt}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      <div className="section">
+        <h2>Cevap Ver</h2>
+        <input
+          type="number"
+          placeholder="Soru ID"
+          value={answerId}
+          onChange={(e) => setAnswerId(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Cevabınız"
+          value={answerInput}
+          onChange={(e) => setAnswerInput(e.target.value)}
+        />
+        <button onClick={submitAnswer}>Gönder</button>
+        {checkResult && <p>{checkResult}</p>}
+      </div>
     </div>
   );
 }
 
-export default App;
+export default QuizPage;
