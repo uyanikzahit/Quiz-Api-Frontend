@@ -1,54 +1,85 @@
+/* Arka plan tam ekran ve boşluksuz */
 .login-container {
-  height: 100vh;
+  position: fixed; /* Sabit konum */
+  top: 0;
+  left: 0;
+  width: 100vw;  /* Tüm genişlik */
+  height: 100vh; /* Tüm yükseklik */
   display: flex;
   justify-content: center;
   align-items: center;
   background: linear-gradient(to right, #667eea, #764ba2);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;      /* Kenar boşlukları kaldır */
+  padding: 0;     /* Kenar boşlukları kaldır */
+  overflow: hidden; /* Kaydırma çubuklarını engelle */
+  box-sizing: border-box;
 }
 
+/* Giriş kutusu */
 .login-box {
   background-color: white;
   padding: 40px 35px;
-  border-radius: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  width: 360px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 380px;
   text-align: center;
+  box-sizing: border-box;
 }
 
+/* Başlık */
 .login-box h2 {
   margin-bottom: 25px;
   color: #2d3748;
+  font-size: 24px;
 }
 
-.login-box input {
-  width: 100%;
-  padding: 12px;
-  margin: 10px 0;
+/* Inputlar için aynı stil ve boyut */
+.login-box input[type="text"],
+.login-box input[type="password"] {
+  width: 100%;            /* Eşit genişlik */
+  padding: 14px 16px;
+  margin: 12px 0;
   border: 1px solid #ccc;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
+  box-sizing: border-box; /* Padding ve border dahil genişlik hesaplama */
+  transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Input focus efekti */
+.login-box input[type="text"]:focus,
+.login-box input[type="password"]:focus {
+  border-color: #764ba2;
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.4);
+  outline: none;
+}
+
+/* Buton */
 .login-box button {
   width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background-color: #4f46e5;
+  padding: 14px;
+  margin-top: 16px;
+  background: linear-gradient(to right, #667eea, #764ba2);
   color: white;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 16px;
-  font-weight: bold;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 14px rgba(102, 126, 234, 0.4);
 }
 
 .login-box button:hover {
-  background-color: #4b4499;
+  background: linear-gradient(to right, #5a6ded, #6936b8);
+  transform: scale(1.02);
 }
 
+/* Hata mesajı */
 .error {
   color: red;
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 14px;
 }
