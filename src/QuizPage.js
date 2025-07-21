@@ -3,13 +3,19 @@ import React, { useState } from 'react';
 import './QuizPage.css';
 
 function QuizPage() {
+  // Sorular listesini tutar
   const [questions, setQuestions] = useState([]);
+  // Rastgele gelen soruyu tutar
   const [randomQuestion, setRandomQuestion] = useState(null);
+  // Cevap gönderimi için gerekli veriler: soru id, seçilen cevap ve kullanıcı adı
   const [answerData, setAnswerData] = useState({ questionId: '', selectedOption: '', username: 'admin' });
+  // Cevap sonucu ve skor bilgisini tutar
   const [result, setResult] = useState(null);
 
+  // LocalStorage'dan token'ı alıyoruz
   const token = localStorage.getItem('token');
 
+  // Tüm soruları backend'den çeker
   const fetchAllQuestions = async () => {
     const res = await fetch('https://localhost:7030/api/quiz/questions', {
       headers: { Authorization: `Bearer ${token}` }
@@ -18,6 +24,7 @@ function QuizPage() {
     setQuestions(data);
   };
 
+  // Rastgele bir soru getirir
   const fetchRandomQuestion = async () => {
     const res = await fetch('https://localhost:7030/api/quiz/question/random', {
       headers: { Authorization: `Bearer ${token}` }
@@ -26,6 +33,7 @@ function QuizPage() {
     setRandomQuestion(data);
   };
 
+  // Kullanıcının cevabını backend'e gönderir ve sonucu alır
   const submitAnswer = async () => {
     const res = await fetch('https://localhost:7030/api/quiz/answer', {
       method: 'POST',
@@ -38,7 +46,6 @@ function QuizPage() {
         sentAt: new Date().toISOString()
       })
     });
-
     const data = await res.json();
     setResult(data);
   };
@@ -47,6 +54,7 @@ function QuizPage() {
     <div className="quiz-container">
       <h1>Quiz Page</h1>
 
+      {/* Tüm soruları listeleyen bölüm */}
       <div className="quiz-section">
         <h2>📚 Tüm Soruları Getir</h2>
         <button onClick={fetchAllQuestions}>Soruları Getir</button>
@@ -64,6 +72,7 @@ function QuizPage() {
         </ul>
       </div>
 
+      {/* Rastgele soru getirme bölümü */}
       <div className="quiz-section">
         <h2>🎲 Rastgele Soru</h2>
         <button onClick={fetchRandomQuestion}>Rastgele Soru Getir</button>
@@ -79,6 +88,7 @@ function QuizPage() {
         )}
       </div>
 
+      {/* Cevap gönderme bölümü */}
       <div className="quiz-section">
         <h2>📝 Soruyu Cevapla</h2>
         <input
@@ -94,6 +104,8 @@ function QuizPage() {
           onChange={(e) => setAnswerData({ ...answerData, selectedOption: e.target.value })}
         />
         <button onClick={submitAnswer}>Cevabı Gönder</button>
+
+        {/* Cevap sonucu ve skor bilgisi */}
         {result && (
           <p>
             Cevap Doğru mu? <strong>{result.correct ? 'Evet ✅' : 'Hayır ❌'}</strong><br />
